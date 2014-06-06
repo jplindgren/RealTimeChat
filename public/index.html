@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Jp Online Chat</title>
+    <link rel="stylesheet" href="chat.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function(){
+            var iosocket = io.connect('http://localhost:7070');
+ 
+            iosocket.on('connect', function () {
+                insertSystemMessage('Conectado ao Jp Online Chat');
+
+                nickname = prompt('Qual o seu nickname?');
+                iosocket.emit('join', nickname);
+ 
+                iosocket.on('message', function(data) {
+                    insertMessage(data);
+                });                
+                iosocket.on('disconnect', function() {
+                    insertSystemMessage('Disconectado');                    
+                });
+                iosocket.on('add chatter', function(nickname) {
+                    addOnlineUser(nickname);
+                });
+                iosocket.on('remove chatter', function(nickname) {
+                    removeOnlineUser(nickname);
+                });
+            });
+ 
+            $('#send').click(function(event) {
+                event.preventDefault();
+                sendMessage($('.inputMessage').val());
+                $('.inputMessage').val('');
+            });
+
+            $('.inputMessage').keydown(function(event){
+                console.log(event.which);
+                if (event.which == 13){
+                    sendMessage($('.inputMessage').val());
+                    $('.inputMessage').val('');
+                }
+            });
+
+            function sendMessage(message){
+                iosocket.emit('message', message);
+                insertMessage({username: 'Você', message: message});
+            }
+
+            function insertSystemMessage(message){
+                insertMessage({message: message}, 'systemMessage');
+            }
+
+            function insertMessage(data, _class){
+                var message = formatMessage(data);
+                var applyClass = _class || "";
+                $('.messages').append($('<li></li>').text(message).addClass(applyClass));
+            }
+
+            function formatMessage(data){
+                return !data.username ? data.message : data.username + ': ' + data.message;
+            }
+
+            function addOnlineUser(nickname){
+                insertSystemMessage(nickname + ' entrou.');
+                $('#users').append($('<li></li>').text(nickname));
+            }
+
+            function removeOnlineUser(nickname){
+                element = $('#users').filter(function(){
+                    return $(this).text() == nickname;
+                });
+                console.log(element);
+                element.remove();
+                insertSystemMessage(nickname + ' saiu.');
+            }
+        });
+    </script>
+</head>
+<body>
+    <ul class="pages">
+        <li class="chat page">
+          <div class="chatArea">
+            <ul class="messages"></ul>
+          </div>
+          <input class="inputMessage" placeholder="Type here..."/>
+          <!-- <input type="submit" id="send" class="sendMessage" value="send"> -->
+        </li>
+        <li class="login page">
+          <div class="form">
+            <h3 class="title">What's your nickname?</h3>
+            <input class="usernameInput" type="text" maxlength="14" />
+          </div>
+        </li>
+    </ul>
+
+    <hr/>
+
+    <div id="usersOnline">
+        <ul id="users"></ul>   
+    </div>
+
+    
+
+</body>
+</html>

@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var server = http.createServer(app);
 server.listen(port, function(){
-	console.log('Listening at: http://localhost:7070');
+	console.log('Listening at: %d', port);
 });
 
 app.get('/', function(request, response){

@@ -8,7 +8,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         $(function(){
-            var iosocket = io.connect('http://localhost:5000');
+            var iosocket = io.connect();
  
             iosocket.on('connect', function () {
                 insertSystemMessage('Conectado ao Jp Online Chat');

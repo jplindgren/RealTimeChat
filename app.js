@@ -2,12 +2,13 @@ var path = require('path');
 var express = require('express');
 var http = require('http');
 var io = require('socket.io');
+var port = process.env.PORT || 5000;
 
 var app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 var server = http.createServer(app);
-server.listen(7070, function(){
+server.listen(port, function(){
 	console.log('Listening at: http://localhost:7070');
 });
 

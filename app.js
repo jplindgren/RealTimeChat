@@ -2,14 +2,14 @@ var path = require('path');
 var express = require('express');
 var http = require('http');
 var io = require('socket.io');
-//var port = process.env.PORT || 5000;
+var port = process.env.PORT || 5000;
 
 var app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 var server = http.createServer(app);
-server.listen(7070, function(){
-	console.log('Listening at: %d', 7070);
+server.listen(port, function(){
+	console.log('Listening at: %d', port);
 });
 
 app.get('/', function(request, response){
